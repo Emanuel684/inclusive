@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Model build artifacts
+model/build/
+model/dist/
+model/*.spec
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS/IDE
+.DS_Store
+.vscode/
+.idea/

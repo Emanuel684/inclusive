@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f6f7fb;
+  color: #1e2430;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  width: min(1000px, 96%);
+  margin: 0 auto;
+  padding: 1.5rem 0 2rem;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.nav-tabs a {
+  text-decoration: none;
+  background: #e5e9f5;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.6rem;
+  color: #1e2430;
+}
+
+.nav-tabs a.active {
+  background: #2f63ee;
+  color: #fff;
+}
+
+.card {
+  background: #fff;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(28, 37, 54, 0.08);
+}
+
+.row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+textarea, input[type="file"], button {
+  font: inherit;
+}
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid #c8cfdf;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+}
+
+button {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  background: #2f63ee;
+  color: #fff;
+}
+
+button:disabled {
+  background: #9fb1eb;
+  cursor: not-allowed;
+}
+
+.result-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.chip {
+  background: #edf1fd;
+  color: #12317f;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.9rem;
+}

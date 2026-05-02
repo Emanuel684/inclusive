@@ -1,0 +1,38 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: inclusive-backend
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_DIR: /workspace/model/artifacts
+      UPLOAD_DIR: /workspace/backend/uploads
+      TEMP_DIR: /workspace/backend/tmp
+    volumes:
+      - ./model:/workspace/model
+      - ./backend:/workspace/backend
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
+    container_name: inclusive-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  model:
+    build:
+      context: ./model
+      dockerfile: Dockerfile
+    container_name: inclusive-model
+    profiles: ["tools"]
+    volumes:
+      - ./model:/app
