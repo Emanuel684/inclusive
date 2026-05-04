@@ -11,6 +11,8 @@ export type SignToken = {
   animation_id: string
   duration_ms?: number | null
   emphasis?: string | null
+  word_index?: number | null
+  surface_word?: string | null
 }
 
 export type TextToSignResponse = {

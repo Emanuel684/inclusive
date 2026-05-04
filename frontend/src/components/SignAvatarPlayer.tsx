@@ -9,6 +9,8 @@ import {
   idleActionPreferences,
 } from '../lib/signAvatarMapping'
 
+const WORD_BOUNDARY_PAUSE_MS = 240
+
 type Props = {
   signs: SignToken[]
   modelUrl?: string
@@ -80,6 +82,20 @@ function AvatarModel({
       for (let i = 0; i < signs.length; i += 1) {
         if (cancelled) {
           return
+        }
+        if (i > 0) {
+          const prev = signs[i - 1]
+          const curr = signs[i]
+          const prevWi = prev.word_index ?? 0
+          const currWi = curr.word_index ?? 0
+          if (currWi !== prevWi) {
+            await new Promise<void>((resolve) => {
+              setTimeout(resolve, WORD_BOUNDARY_PAUSE_MS)
+            })
+            if (cancelled) {
+              return
+            }
+          }
         }
         onStepChange?.(i)
         const sign = signs[i]
@@ -156,9 +172,11 @@ export function SignAvatarPlayer({ signs, modelUrl = '/avatars/placeholder.glb',
         camera={{ position: [0, 1.4, 3.2], fov: 40 }}
         dpr={[1, 2]}
       >
-        <color attach="background" args={['#eef1fb']} />
-        <ambientLight intensity={0.65} />
-        <directionalLight position={[3, 4, 2]} intensity={1.1} />
+        <color attach="background" args={['#e8ecf8']} />
+        <hemisphereLight args={['#f0f4ff', '#b8c4e0']} intensity={0.55} />
+        <ambientLight intensity={0.45} />
+        <directionalLight position={[3.5, 5, 2.5]} intensity={1.15} castShadow={false} />
+        <directionalLight position={[-2, 2, -3]} intensity={0.35} />
         <Suspense fallback={<Loader />}>
           <AvatarModel signs={signs} modelUrl={modelUrl} onStepChange={onStepChange} />
         </Suspense>

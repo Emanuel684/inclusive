@@ -8,6 +8,8 @@ class SignToken(BaseModel):
     animation_id: str
     duration_ms: int | None = None
     emphasis: str | None = None
+    word_index: int | None = None
+    surface_word: str | None = None
 
 
 class TextToSignRequest(BaseModel):

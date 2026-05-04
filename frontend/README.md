@@ -31,6 +31,7 @@ Variable opcional:
 - Modelo GLB: `public/avatars/placeholder.glb` (Vite lo copia a `dist/avatars/`).
 - Mapeo `animation_id` del backend → preferencias de clips del GLB: [`src/lib/signAvatarMapping.ts`](src/lib/signAvatarMapping.ts).
 - Política **best effort**: si no hay clip para un `animation_id`, se intenta `Idle` y en último caso la primera acción disponible del modelo (solo en desarrollo se registra `console.debug`).
+- Cada signo puede incluir `word_index` y `surface_word` para mostrar **toda la frase** agrupada por palabras (ver [`src/lib/groupSignsByWord.ts`](src/lib/groupSignsByWord.ts)).
 
 ### Añadir un gloss del diccionario
 

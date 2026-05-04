@@ -4,18 +4,59 @@ import re
 from pathlib import Path
 
 from app.services.inference import InferenceService
+from app.services.text_normalize import (
+    letters_only,
+    normalize_display_text,
+    split_words_for_signs,
+    strip_accents,
+)
 
-SIGN_DICTIONARY = {
+# Claves en ASCII minúsculas (post strip_accents). Gloss en MAYÚSCULAS para UI.
+SIGN_DICTIONARY: dict[str, str] = {
     "hola": "HOLA",
     "gracias": "GRACIAS",
     "adios": "ADIOS",
     "buenos": "BUENOS",
     "dias": "DIAS",
     "ayuda": "AYUDA",
+    "como": "COMO",
+    "estas": "ESTAS",
+    "esta": "ESTA",
+    "estan": "ESTAN",
+    "tu": "TU",
+    "usted": "USTED",
+    "bien": "BIEN",
+    "mal": "MAL",
+    "si": "SI",
+    "no": "NO",
+    "por": "POR",
+    "favor": "FAVOR",
+    "que": "QUE",
+    "quien": "QUIEN",
+    "donde": "DONDE",
+    "cuando": "CUANDO",
+    "mucho": "MUCHO",
+    "poco": "POCO",
+    "yo": "YO",
+    "nosotros": "NOSOTROS",
+    "ellos": "ELLOS",
+    "ellas": "ELLAS",
+    "el": "EL",
+    "ella": "ELLA",
+    "unos": "UNOS",
+    "unas": "UNAS",
+    "porque": "PORQUE",
+    "pero": "PERO",
+    "disculpa": "DISCULPA",
+    "perdon": "PERDON",
+    "placer": "PLACER",
+    "encantado": "ENCANTADO",
+    "encantada": "ENCANTADA",
 }
 
-LEX_DURATION_MS = 1000
-SPELL_DURATION_MS = 650
+LEX_DURATION_MS = 1050
+SPELL_DURATION_MS = 580
+INTER_LETTER_PAUSE_MS = 40
 
 
 class TranslationOrchestrator:
@@ -23,39 +64,51 @@ class TranslationOrchestrator:
         self.inference = inference_service
 
     def translate_text_to_sign(self, text: str) -> dict:
-        normalized = re.sub(r"\s+", " ", text.strip().lower())
+        display = normalize_display_text(text)
+        word_pairs = split_words_for_signs(text)
         signs: list[dict] = []
-        for token in normalized.split(" "):
-            if token in SIGN_DICTIONARY:
-                gloss = SIGN_DICTIONARY[token]
-                # Canonical animation_id: lex_<slug> lowercase for stable frontend mapping
+
+        for word_index, (lookup, surface) in enumerate(word_pairs):
+            if lookup in SIGN_DICTIONARY:
+                gloss = SIGN_DICTIONARY[lookup]
                 slug = gloss.lower()
                 signs.append(
                     {
-                        "token": token,
+                        "token": lookup,
                         "sign_gloss": gloss,
                         "source": "dictionary",
                         "animation_id": f"lex_{slug}",
                         "duration_ms": LEX_DURATION_MS,
                         "emphasis": None,
+                        "word_index": word_index,
+                        "surface_word": surface,
                     }
                 )
-            else:
-                for char in token:
-                    if not char.strip():
-                        continue
-                    upper = char.upper()
-                    signs.append(
-                        {
-                            "token": char,
-                            "sign_gloss": upper,
-                            "source": "spelling",
-                            "animation_id": f"spell_{upper.lower()}",
-                            "duration_ms": SPELL_DURATION_MS,
-                            "emphasis": None,
-                        }
-                    )
-        return {"normalized_text": normalized, "signs": signs}
+                continue
+
+            letters = letters_only(lookup)
+            if not letters:
+                continue
+
+            for char in letters:
+                upper = char.upper()
+                signs.append(
+                    {
+                        "token": char,
+                        "sign_gloss": upper,
+                        "source": "spelling",
+                        "animation_id": f"spell_{upper.lower()}",
+                        "duration_ms": SPELL_DURATION_MS + INTER_LETTER_PAUSE_MS,
+                        "emphasis": None,
+                        "word_index": word_index,
+                        "surface_word": letters or surface,
+                    }
+                )
+
+        normalized = re.sub(r"\s+", " ", strip_accents(display.lower()))
+        normalized = re.sub(r"[^\w\s]+", " ", normalized, flags=re.UNICODE)
+        normalized = re.sub(r"\s+", " ", normalized).strip()
+        return {"normalized_text": normalized or display.lower(), "signs": signs}
 
     def translate_image_to_sign(self, image_path: Path) -> dict:
         pred = self.inference.predict_image(image_path)
@@ -69,6 +122,8 @@ class TranslationOrchestrator:
                 "animation_id": f"lex_{slug}",
                 "duration_ms": LEX_DURATION_MS,
                 "emphasis": None,
+                "word_index": 0,
+                "surface_word": letter,
             }
         ]
         return {**pred, "signs": signs}
