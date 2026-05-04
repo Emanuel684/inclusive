@@ -5,13 +5,17 @@ type Props = {
 }
 
 const labels: Record<UiStatus, string> = {
-  idle: 'Idle',
-  uploading: 'Uploading',
-  processing: 'Processing',
-  done: 'Done',
+  idle: 'Listo',
+  uploading: 'Subiendo',
+  processing: 'Procesando',
+  done: 'Completado',
   error: 'Error',
 }
 
 export function StatusBadge({ status }: Props) {
-  return <span className="chip">{labels[status]}</span>
+  return (
+    <span className={`status-badge status-badge--${status}`} role="status" aria-live="polite">
+      {labels[status]}
+    </span>
+  )
 }

@@ -69,3 +69,16 @@ py -m model_pipeline train-final --data-dir <ruta_csv_sign_mnist> --genome 1 1 1
 cd frontend && npm run build
 cd ../backend && py -m pytest -q
 ```
+
+Nota: ejecuta `pytest` desde la carpeta `backend` para que el paquete `app` resuelva correctamente.
+
+## Avatar `text-to-sign`
+
+- El backend envía `animation_id` canónico (`lex_<slug>` en minúsculas, `spell_<letra>`).
+- El frontend resuelve clips del GLB en [`frontend/src/lib/signAvatarMapping.ts`](frontend/src/lib/signAvatarMapping.ts) con fallback **best effort**.
+
+### Checklist visual (manual)
+
+- `Texto a señas`: traducción, chips activos al ritmo del avatar, layout móvil/desktop.
+- `Imagen a señas`: subida, error de tamaño, resultado legible.
+- `Video señas a texto`: subida, transcript y lista de frames sin layout roto.

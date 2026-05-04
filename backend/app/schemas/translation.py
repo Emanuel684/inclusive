@@ -5,6 +5,9 @@ class SignToken(BaseModel):
     token: str
     sign_gloss: str
     source: str
+    animation_id: str
+    duration_ms: int | None = None
+    emphasis: str | None = None
 
 
 class TextToSignRequest(BaseModel):

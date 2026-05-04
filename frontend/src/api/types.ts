@@ -8,6 +8,9 @@ export type SignToken = {
   token: string
   sign_gloss: string
   source: 'dictionary' | 'spelling'
+  animation_id: string
+  duration_ms?: number | null
+  emphasis?: string | null
 }
 
 export type TextToSignResponse = {

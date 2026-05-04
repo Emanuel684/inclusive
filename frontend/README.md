@@ -1,9 +1,10 @@
 # Frontend - Inclusive
 
 SPA en React + Vite con 3 flujos:
-- Texto a senas
-- Imagen a senas
-- Video de senas a texto
+
+- Texto a señas (con avatar 3D y secuencia de chips)
+- Imagen a señas
+- Video de señas a texto
 
 ## Comandos
 
@@ -13,9 +14,10 @@ npm run dev
 npm run build
 ```
 
-## Configuracion
+## Configuración
 
 Variable opcional:
+
 - `VITE_API_BASE_URL` (default: `http://localhost:8000`)
 
 ## Rutas
@@ -24,82 +26,30 @@ Variable opcional:
 - `/image-to-sign`
 - `/video-sign-to-text`
 
+## Avatar y animaciones (`text-to-sign`)
+
+- Modelo GLB: `public/avatars/placeholder.glb` (Vite lo copia a `dist/avatars/`).
+- Mapeo `animation_id` del backend → preferencias de clips del GLB: [`src/lib/signAvatarMapping.ts`](src/lib/signAvatarMapping.ts).
+- Política **best effort**: si no hay clip para un `animation_id`, se intenta `Idle` y en último caso la primera acción disponible del modelo (solo en desarrollo se registra `console.debug`).
+
+### Añadir un gloss del diccionario
+
+1. En backend, el token del diccionario produce `animation_id` tipo `lex_<slug>` con `slug` en minúsculas (ej. `lex_hola`).
+2. En frontend, añade una entrada en `LEX_CLIP_BY_SLUG` con la lista ordenada de nombres de clip **base** (`Wave`, `ThumbsUp`, …). Los nombres reales del GLB pueden incluir prefijo (`RobotArmature|Wave`); `findActionKey` hace coincidencia flexible.
+
+### Añadir deletreo
+
+- Cada letra usa `spell_<letra>` en minúsculas (`spell_a`). La rotación de gestos por letra está en `spellLetterPreferences`.
+
 ## Docker
 
 ```bash
 docker build -t inclusive-frontend ./frontend
 docker run --rm -p 5173:80 inclusive-frontend
 ```
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Checklist visual rápido
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Texto: layout 2 columnas desde ~1024px; avatar no debe tapar el textarea en móvil.
+- Imagen / video: bloque de resultado con `result-block`, sin `card` anidado.
+- Estado de carga: badge distinto de los chips de resultado.

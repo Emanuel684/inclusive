@@ -13,6 +13,23 @@ def test_text_to_sign() -> None:
     data = response.json()
     assert data["mode"] == "text-to-sign"
     assert len(data["signs"]) > 0
+    first = data["signs"][0]
+    assert "animation_id" in first
+    assert first["animation_id"].startswith("lex_") or first["animation_id"].startswith("spell_")
+    assert first["animation_id"] == "lex_hola"
+    assert first.get("duration_ms") is not None
+    assert all("animation_id" in s for s in data["signs"])
+    assert data["signs"][1]["animation_id"] == "spell_m"
+
+
+def test_text_to_sign_lex_slugs_lowercase() -> None:
+    client = TestClient(app)
+    response = client.post("/translate/text-to-sign", json={"text": "gracias"})
+    assert response.status_code == 200
+    signs = response.json()["signs"]
+    assert len(signs) == 1
+    assert signs[0]["animation_id"] == "lex_gracias"
+    assert signs[0]["sign_gloss"] == "GRACIAS"
 
 
 def test_image_to_sign() -> None:

@@ -4,12 +4,12 @@ type Props = {
 
 export function HistoryPanel({ entries }: Props) {
   return (
-    <section className="card">
-      <h3>Historial local</h3>
+    <section className="card card--muted">
+      <h3 className="section-title">Historial local</h3>
       {entries.length === 0 ? (
-        <p>No hay traducciones todavía.</p>
+        <p className="muted">No hay traducciones todavía.</p>
       ) : (
-        <ul>
+        <ul className="history-list">
           {entries.map((entry, index) => (
             <li key={`${entry}-${index}`}>{entry}</li>
           ))}

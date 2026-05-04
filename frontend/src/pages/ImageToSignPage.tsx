@@ -42,26 +42,35 @@ export function ImageToSignPage() {
   return (
     <>
       <section className="card">
-        <div className="row">
+        <div className="page-toolbar">
           <h2>Imagen a lenguaje de señas</h2>
           <StatusBadge status={status} />
         </div>
-        <FileUploader label="Subir imagen" accept="image/png,image/jpeg" onFileSelected={setFile} />
-        <button onClick={submit} disabled={!file}>
-          Traducir imagen
-        </button>
-        {error && <p>{error}</p>}
-        {result && (
-          <div className="result-list">
-            <span className="chip">Letra: {result.predicted_letter}</span>
-            <span className="chip">Confianza: {(result.confidence * 100).toFixed(1)}%</span>
-            {result.signs.map((sign, index) => (
-              <span className="chip" key={`${sign.sign_gloss}-${index}`}>
-                {sign.sign_gloss}
+        <FileUploader label="Subir imagen (PNG o JPEG)" accept="image/png,image/jpeg" onFileSelected={setFile} />
+        <div className="row btn-row">
+          <button type="button" onClick={submit} disabled={!file}>
+            Traducir imagen
+          </button>
+        </div>
+        {error ? <p className="alert">{error}</p> : null}
+        {result ? (
+          <div className="result-block">
+            <strong>Resultado</strong>
+            <div className="result-list" role="list">
+              <span className="chip" role="listitem">
+                Letra: {result.predicted_letter}
               </span>
-            ))}
+              <span className="chip" role="listitem">
+                Confianza: {(result.confidence * 100).toFixed(1)}%
+              </span>
+              {result.signs.map((sign, index) => (
+                <span className="chip" key={`${sign.animation_id ?? sign.sign_gloss}-${index}`} role="listitem">
+                  {sign.sign_gloss}
+                </span>
+              ))}
+            </div>
           </div>
-        )}
+        ) : null}
       </section>
       <HistoryPanel entries={history} />
     </>

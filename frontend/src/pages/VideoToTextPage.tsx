@@ -42,28 +42,31 @@ export function VideoToTextPage() {
   return (
     <>
       <section className="card">
-        <div className="row">
+        <div className="page-toolbar">
           <h2>Video de señas a texto</h2>
           <StatusBadge status={status} />
         </div>
-        <FileUploader label="Subir video" accept="video/mp4,video/webm" onFileSelected={setFile} />
-        <button onClick={submit} disabled={!file}>
-          Traducir video
-        </button>
-        {error && <p>{error}</p>}
-        {result && (
-          <div className="card">
-            <strong>Texto detectado:</strong>
+        <FileUploader label="Subir video (MP4 o WebM)" accept="video/mp4,video/webm" onFileSelected={setFile} />
+        <div className="row btn-row">
+          <button type="button" onClick={submit} disabled={!file}>
+            Traducir video
+          </button>
+        </div>
+        {error ? <p className="alert">{error}</p> : null}
+        {result ? (
+          <div className="result-block">
+            <strong>Texto detectado</strong>
             <p>{result.transcript}</p>
-            <div className="result-list">
+            <p className="muted-spaced">Predicciones por frame (muestra):</p>
+            <div className="result-list" role="list">
               {result.frame_predictions.map((label, index) => (
-                <span className="chip" key={`${label}-${index}`}>
+                <span className="chip" key={`${label}-${index}`} role="listitem">
                   {label}
                 </span>
               ))}
             </div>
           </div>
-        )}
+        ) : null}
       </section>
       <HistoryPanel entries={history} />
     </>
